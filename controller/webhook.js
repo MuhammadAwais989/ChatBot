@@ -9,43 +9,43 @@ const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const webhook = async (req, res) => {
   try {
     const entry = req.body.entry?.[0];
-    console.log(entry);
-
     const change = entry?.changes?.[0];
-    console.log(change);
-    const message = change?.value?.messages?.[0];
-    console.log(message);
+    const value = change?.value;
 
-    if (!message) return res.sendStatus(200);
+    // ❗ Ignore status updates
+    if (!value?.messages) {
+      return res.sendStatus(200);
+    }
+
+    const message = value.messages[0];
     const from = message.from;
 
-    // Button reply
+    console.log("📩 MESSAGE RECEIVED:", message);
+
+    // ✅ Button reply handling
     if (
       message.type === "interactive" &&
-      message.interactive.type === "button_reply"
+      message.interactive?.type === "button_reply"
     ) {
       const buttonId = message.interactive.button_reply.id;
-      console.log("Button clicked:", buttonId);
+      console.log("✅ BUTTON CLICKED:", buttonId);
 
       if (buttonId === "PRODUCT") {
         await sendProduct(from, WHATSAPP_TOKEN, PHONE_NUMBER_ID);
-      }
-
-      if (buttonId === "ORDER") {
+      } else if (buttonId === "ORDER") {
         await sendOrderStatus(from, WHATSAPP_TOKEN, PHONE_NUMBER_ID);
-      }
-
-      if (buttonId === "MENU") {
+      } else if (buttonId === "MENU") {
         await sendDefaultMenu(from, WHATSAPP_TOKEN, PHONE_NUMBER_ID);
       }
     }
 
     res.sendStatus(200);
   } catch (err) {
-    console.error(err);
+    console.error("❌ WEBHOOK ERROR:", err);
     res.sendStatus(500);
   }
 };
+
 
 const getWebhook = (req, res) => {
   const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
