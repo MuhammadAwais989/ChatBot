@@ -20,8 +20,13 @@ const webhook = async (req, res) => {
     const from = message.from;
 
     // Button reply
-    if (message.type === "interactive") {
+    if (
+      message.type === "interactive" &&
+      message.interactive.type === "button_reply"
+    ) {
       const buttonId = message.interactive.button_reply.id;
+      console.log("Button clicked:", buttonId);
+
       if (buttonId === "PRODUCT") {
         await sendProduct(from, WHATSAPP_TOKEN, PHONE_NUMBER_ID);
       }
@@ -43,13 +48,12 @@ const webhook = async (req, res) => {
 };
 
 const getWebhook = (req, res) => {
-
   const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
-  
+
   if (mode && token) {
     if (mode === "subscribe" && token === VERIFY_TOKEN) {
       console.log("WEBHOOK_VERIFIED");
@@ -60,8 +64,7 @@ const getWebhook = (req, res) => {
   }
 };
 
-
 module.exports = {
   webhook,
-  getWebhook
-}
+  getWebhook,
+};
