@@ -1,4 +1,3 @@
-// sendDefaultMenu.js
 const axios = require("axios");
 
 const sendDefaultMenu = async (to, token, phoneId) => {
