@@ -19,11 +19,9 @@ app.get("/send", async (req, res) => {
 });
 
 // Webhook
-app.post("/webhook", webhook);
+app.use("/webhook", webhook);
 
-// app.get("/webhook", (req, res) => {
-//   res.send("Webhook is live");
-// });
+
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
